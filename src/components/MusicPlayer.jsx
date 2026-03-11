@@ -3,7 +3,8 @@ import useMusic from "../hooks/useMusic"
 
 export default function MusicPlayer() {
 
-    const { currentTrack, formatTime, currentTime, setCurrentTime, duration, setDuration } = useMusic();
+    const { currentTrack, formatTime, currentTime, setCurrentTime, duration, 
+        setDuration, nextTrack, prevTrack, play, pause, isPlaying} = useMusic();
     const audioRef = useRef(null);
 
     useEffect(()=> {
@@ -47,6 +48,15 @@ export default function MusicPlayer() {
                     // style={""} 
                 />
                 <span className="time">{formatTime(duration)}</span>
+            </div>
+
+            <div className="controls">
+                <button className="control-btn" onClick={prevTrack}>⏮</button>
+                <button className="control-btn play-btn" 
+                    onClick={()=> isPlaying ? pause() : play()}>
+                    {isPlaying ? "⏸" : "▶︎" }
+                </button>
+                <button className="control-btn" onClick={nextTrack}>⏭</button>
             </div>
         </div>
     );
