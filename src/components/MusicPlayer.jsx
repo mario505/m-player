@@ -4,7 +4,9 @@ import useMusic from "../hooks/useMusic"
 export default function MusicPlayer() {
 
     const { currentTrack, formatTime, currentTime, setCurrentTime, duration,
-        setDuration, nextTrack, prevTrack, play, pause, isPlaying } = useMusic();
+        setDuration, nextTrack, prevTrack, play, pause, isPlaying,
+        volume, setVolume } = useMusic();
+    
     const audioRef = useRef(null);
 
     function handleTimeChange(e) {
@@ -15,6 +17,19 @@ export default function MusicPlayer() {
         audio.currentTime = newTime;
         setCurrentTime(newTime);
     }
+
+    function handleVolumeChange(e) {
+        const newVolume = parseFloat(e.target.value);
+        setVolume(newVolume);
+    }
+
+    useEffect(() => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        audio.volume = volume;
+
+    }, [volume]);
 
     useEffect(() => {
         const audio = audioRef.current;
@@ -56,6 +71,8 @@ export default function MusicPlayer() {
 
     }, [setDuration, setCurrentTime, currentTrack]);
 
+    const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
+
     return (
         <div className="music-player">
             <audio ref={audioRef} src={currentTrack.url} preload="metadata" crossOrigin="anonymous" />
@@ -71,7 +88,7 @@ export default function MusicPlayer() {
                     step="0.1" value={currentTime}
                     className="progress-bar"
                     onChange={handleTimeChange}
-                // style={""} 
+                    style={{"--progress": `${progressPercentage}%`}} 
                 />
                 <span className="time">{formatTime(duration)}</span>
             </div>
@@ -83,6 +100,13 @@ export default function MusicPlayer() {
                     {isPlaying ? "⏸" : "▶︎"}
                 </button>
                 <button className="control-btn" onClick={nextTrack}>⏭</button>
+            </div>
+
+            <div className="volume-container">
+                <span className="volume-icon">🕪</span>
+                <input type="range" min="0" max="1" step="0.1" 
+                    className="volume-bar" onChange={handleVolumeChange} 
+                    value={volume} />
             </div>
         </div>
     );
