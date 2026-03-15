@@ -35,6 +35,7 @@ export const MusicProvider = ({ children }) => {
     const [duration, setDuration] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(0.5);
+    const [playlists, setPlaylists] = useState([]);
 
     function handlePlaySong(song, index) {
         setCurrentTrack(song);
@@ -72,23 +73,36 @@ export const MusicProvider = ({ children }) => {
     function play() { setIsPlaying(true) };
     function pause() { setIsPlaying(false) };
 
+    const createPlaylist = (name) => {
+        const newPlaylist = {
+            id: Date.now(),
+            name,
+            songs: [],
+        };
+
+        setPlaylists((prev) => [...prev, newPlaylist]);
+    }
+
+
     return (<MusicContext.Provider value={{
-        allSongs, 
-        handlePlaySong, 
+        allSongs,
+        handlePlaySong,
         currentTrackIndex,
-        currentTrack, 
-        setCurrentTime, 
-        currentTime, 
-        formatTime, 
-        duration, 
+        currentTrack,
+        setCurrentTime,
+        currentTime,
+        formatTime,
+        duration,
         setDuration,
-        nextTrack, 
-        prevTrack, 
-        play, 
-        pause, 
-        isPlaying, 
-        volume, 
-        setVolume
+        nextTrack,
+        prevTrack,
+        play,
+        pause,
+        isPlaying,
+        volume,
+        setVolume,
+        createPlaylist,
+        playlists
     }}>
         {children}
     </MusicContext.Provider>);
@@ -98,7 +112,7 @@ export const useMusic = () => {
     const contextValue = useContext(MusicContext);
     if (!contextValue) {
         throw new Error("useMusic must be used inside of MusicProvider");
-    }    
+    }
 
     return contextValue;
 }
