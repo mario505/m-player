@@ -7,7 +7,7 @@ export default function Playlists() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const { playlists, createPlaylist, allSongs } = useMusic();
+  const { playlists, createPlaylist, allSongs, addSongToPlaylist } = useMusic();
 
   const filteredSongs = allSongs.filter((song) => {
     const matches =
@@ -26,6 +26,14 @@ export default function Playlists() {
     if (newPlaylistName.trim()) {
       createPlaylist(newPlaylistName.trim());
       setNewPlaylistName("");
+    }
+  };
+
+  const handleAddSong = (song) => {
+    if (selectedPlaylist) {
+      addSongToPlaylist(selectedPlaylist.id, song);
+      setSearchQuery("");
+      setShowDropdown(false);
     }
   };
 
@@ -93,14 +101,33 @@ export default function Playlists() {
                         </div>
                       ) : (
                         filteredSongs.slice(0, 5).map((song, key) => (
-                          <div key={key} className="dropdown-item">
+                          <div
+                            key={key}
+                            className="dropdown-item"
+                            onClick={() => handleAddSong(song)}
+                          >
                             <span className="song-title">{song.title}</span>
                             <span className="song-artist">{song.artist}</span>
-                          </div>))
+                          </div>
+                        ))
                       )}
                     </div>
                   )}
                 </div>
+              </div>
+              <div className="playlist-songs">
+                {playlist.songs.length === 0 ? (
+                  <p>No songs on this playlist</p>
+                ) : (
+                  playlist.songs.map((song, key) => 
+                    <div key={key} className={`playlist-song`}>
+                      <div className="song-info">
+                        <span className="song-title">{song.title}</span>
+                        <span className="song-artist">{song.artist}</span>
+                      </div>
+                      <span className="song-duration">{song.duration}</span>
+                    </div>)
+                )}
               </div>
             </div>
           ))
