@@ -7,7 +7,15 @@ export default function Playlists() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const { playlists, createPlaylist, allSongs, addSongToPlaylist } = useMusic();
+  const {
+    playlists,
+    createPlaylist,
+    allSongs,
+    addSongToPlaylist,
+    currentTrackIndex,
+    handlePlaySong,
+    deletePlaylist
+  } = useMusic();
 
   const filteredSongs = allSongs.filter((song) => {
     const matches =
@@ -36,6 +44,17 @@ export default function Playlists() {
       setShowDropdown(false);
     }
   };
+
+  const handlePlayFromPlaylist = (song) => {
+    const globalIndex = allSongs.findIndex((s)=> s.id === song.id);
+    handlePlaySong(song, globalIndex);
+  }
+
+  const deletePlaylistConfirmation = (playlist) => {
+    if (window.confirm(`Are you sure you want to delete "${playlist.name}"?`)){
+      deletePlaylist(playlist.id);
+    }
+  }
 
   return (
     <div className="playlists">
@@ -68,7 +87,8 @@ export default function Playlists() {
               <div className="playlist-header">
                 <h3>{playlist.name}</h3>
                 <div className="playlist-actions">
-                  <button className="delete-playlist-btn">Delete</button>
+                  <button className="delete-playlist-btn"
+                    onClick={()=> deletePlaylistConfirmation(playlist)}>Delete</button>
                 </div>
               </div>
 
@@ -119,14 +139,26 @@ export default function Playlists() {
                 {playlist.songs.length === 0 ? (
                   <p>No songs on this playlist</p>
                 ) : (
-                  playlist.songs.map((song, key) => 
-                    <div key={key} className={`playlist-song`}>
+                  playlist.songs.map((song, key) => (
+                    <div
+                      key={key}
+                      className={`playlist-song ${
+                        currentTrackIndex ===
+                        allSongs.findIndex((s) => s.id === song.id)
+                          ? "active"
+                          : ""
+                      }`}
+                      onClick={() =>
+                        handlePlayFromPlaylist(song, playlist.id, key)
+                      }
+                    >
                       <div className="song-info">
                         <span className="song-title">{song.title}</span>
                         <span className="song-artist">{song.artist}</span>
                       </div>
                       <span className="song-duration">{song.duration}</span>
-                    </div>)
+                    </div>
+                  ))
                 )}
               </div>
             </div>
